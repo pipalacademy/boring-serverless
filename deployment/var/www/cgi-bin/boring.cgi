@@ -7,8 +7,12 @@ from pathlib import Path
 from wsgiref.handlers import CGIHandler
 
 
-this_path = Path(__file__).parent
+# change this
+this_path = Path("/home/dev/boring-serverless") # path to boring-serverless installation
+
 apps_dir = this_path / "apps"
+
+# change this
 PYTHON_PACKAGES_PATH = os.getenv("PYTHON_PACKAGES_PATH", this_path / "venv/lib/python3.9/site-packages")
 
 
