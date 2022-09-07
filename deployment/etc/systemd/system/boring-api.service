@@ -11,7 +11,7 @@ Group=dev
 
 # change this
 WorkingDirectory=/home/dev/boring-serverless
-ExecStart=/home/dev/boring-serverless/venv/bin/python -m gunicorn api.app:app -b 127.0.0.1:8000
+ExecStart=/home/dev/boring-serverless/venv/bin/python -m gunicorn api:app -b 127.0.0.1:8000
 
 [Install]
 WantedBy=multi-user.target
