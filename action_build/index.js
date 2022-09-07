@@ -14619,7 +14619,10 @@ const github = __nccwpck_require__(1119)
 const axios = __nccwpck_require__(9502)
 
 const serverURL = core.getInput("server_url")
-const { owner, name } = github.event.repository
+const { owner, name } = github.context.repo
+
+console.log("repo object: ", JSON.stringify(github.context.repo))
+console.log("request body: ", JSON.stringify({repo_owner: owner, repo_name: name}))
 
 axios
     .post(`${serverURL}/deploy`, {
