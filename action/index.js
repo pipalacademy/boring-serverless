@@ -12,7 +12,7 @@ axios
     })
     .then(res => {
         console.log("done! response:")
-        console.log(JSON.stringify(res))
+        console.log(JSON.stringify(res.data))
     })
     .catch(error => {
         core.setFailed(error.message)
