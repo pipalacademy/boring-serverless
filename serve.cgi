@@ -8,29 +8,14 @@ from wsgiref.handlers import CGIHandler
 
 
 this_path = Path(__file__).parent
+apps_dir = this_path / "apps"
 PYTHON_PACKAGES_PATH = os.getenv("PYTHON_PACKAGES_PATH", this_path / "venv/lib/python3.9/site-packages")
-
-
-def get_base_dir():
-    config = get_config()
-
-    base_dir = config.get("base_directory", "apps")
-
-    return (this_path / base_dir).resolve()
-
-
-def get_config():
-    with open(this_path / "config.yml") as f:
-        config = yaml.safe_load(f)
-
-    return config
 
 
 def get_root(hostname):
     first, _ = hostname.split(".", maxsplit=1)
 
-    base_path = get_base_dir()
-    return str(base_path / first)
+    return str(apps_dir / first)
 
 
 def respond_404():
@@ -44,11 +29,10 @@ def respond_404():
 
 
 if __name__ == "__main__":
-    hostname = os.getenv("SERVER_NAME")
-
     if PYTHON_PACKAGES_PATH:
         sys.path.insert(0, str(PYTHON_PACKAGES_PATH))
 
+    hostname = os.getenv("SERVER_NAME")
     sys.path.insert(0, str(get_root(hostname)))
 
     try:

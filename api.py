@@ -18,32 +18,29 @@ def get_config():
 
 @app.route("/")
 def health_check():
-    return "Works!"
+    return "Works!\n"
 
 
 @app.route("/deploy", methods=["POST"])
 def deploy():
-    if "repository" not in request.json:
+    if "repo_owner" not in request.json or "repo_name" not in request.json:
         return {
             "status": "bad_request",
-            "message": "repository name missing in request",
+            "message": "repo_owner or repo_name missing in request",
         }
 
-    full_repo_name = request.json.get("repository")
+    repo_owner, repo_name = request.json.get("repo_owner"), request.json.get("repo_name")
 
-    config = get_config()
-    allowed_repos = config.get("whitelisted_repos", [])
+    allowed_repos = get_config().get("whitelisted_repos", [])
 
-    if full_repo_name not in allowed_repos:
+    if (full_repo_name := f"{repo_owner}/{repo_name}") not in allowed_repos:
         return {
             "status": "not_allowed",
-            "message": "repository is not whitelisted",
+            "message": f"repository {full_repo_name} is not whitelisted",
         }, 403
 
-    owner_name, repo_name = full_repo_name.split("/")
-
     try:
-        deploy_app(owner_name, repo_name)
+        deploy_app(repo_owner, repo_name)
     except git.exc.GitError as e:
         return {"status": "git_problem", "message": str(e)}, 400
 
@@ -66,8 +63,7 @@ def get_repo_url(owner_name, repo_name):
 
 
 def get_repo_dir(owner_name, repo_name):
-    config = get_config()
-    base_dir = this_path / config.get("base_directory", "apps")
+    base_dir = this_path / "apps"
     base_dir.mkdir(exist_ok=True)
 
     return base_dir / owner_name
