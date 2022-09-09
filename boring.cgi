@@ -1,5 +1,6 @@
 #!./venv/bin/python
 
+import fnmatch
 import os
 import sys
 import yaml
@@ -8,12 +9,15 @@ from wsgiref.handlers import CGIHandler
 
 
 this_path = Path(__file__).parent # path to boring-serverless installation
-apps_dir = this_path / "apps"
+APPS_DIR = this_path / "apps"
+
+API_HOSTNAME_PATTERNS = ["localhost", "boring.*"]
+
 
 def get_root(hostname):
     first, _ = hostname.split(".", maxsplit=1)
 
-    return str(apps_dir / first)
+    return str(APPS_DIR / first)
 
 
 class Serverless:
@@ -27,13 +31,19 @@ class Serverless:
         return [body]
 
     def get_app(self, hostname):
-        sys.path.insert(0, str(get_root(hostname)))
+        if any(fnmatch.fnmatch(hostname, pattern) for pattern in API_HOSTNAME_PATTERNS):
+            sys.path.insert(0, str(this_path))
 
-        try:
-            from wsgi import app
+            from api import app
             return app
-        except ImportError:
-            return self.not_found_app
+        else:
+            sys.path.insert(0, str(get_root(hostname)))
+
+            try:
+                from wsgi import app
+                return app
+            except ImportError:
+                return self.not_found_app
 
     def __call__(self, environ, start_response):
         hostname = os.getenv("SERVER_NAME")
