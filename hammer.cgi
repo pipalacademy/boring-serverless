@@ -8,10 +8,10 @@ from pathlib import Path
 from wsgiref.handlers import CGIHandler
 
 
-this_path = Path(__file__).parent # path to boring-serverless installation
+this_path = Path(__file__).parent # path to hammer installation
 APPS_DIR = this_path / "apps"
 
-API_HOSTNAME_PATTERNS = ["localhost", "boring.*"]
+API_HOSTNAME_PATTERNS = ["localhost", "hamr.*"]
 
 
 def get_root(hostname):

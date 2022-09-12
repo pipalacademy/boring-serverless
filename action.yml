@@ -1,8 +1,8 @@
-name: "Deploy with Boring"
-description: "Deploy a webapp with boring-serverless"
+name: "Deploy with Hammer"
+description: "Deploy a webapp with hammer"
 inputs:
   server_url:
-    description: "URL of boring API server"
+    description: "URL of hammer API server"
     required: true
 runs:
   using: 'node16'
