@@ -46,4 +46,16 @@ $ sudo a2ensite boring
 
 6. (optional) Enabling SSL.
 
-Use certbot with apache to setup SSL.
+For a non-wildcard URL, you can use [certbot with apache plugin](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-20-04).
+
+However, for wildcard URLs, you will have to go to your DNS settings and add a TXT entry as part of the process.
+
+```
+sudo certbot certonly --manual --preferred-challenges=dns -d '*.rajdhani.example.com'
+```
+
+certbot will then give you some text that it will ask you to add as a TXT entry on a particular hostname.
+Once you do that, a certificate and private key will be generated for you.
+
+Then use the apache configuration in [`boring-with-ssl.conf`](/deployment/etc/sites-available/boring-with-ssl.conf)
+instead of `boring.conf`, and replace the SSL certificate/keyfile paths with your paths.
