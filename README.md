@@ -59,5 +59,5 @@ sudo certbot certonly --manual --preferred-challenges=dns -d '*.rajdhani.example
 certbot will then give you some text that it will ask you to add as a TXT entry on a particular hostname.
 Once you do that, a certificate and private key will be generated for you.
 
-Then use the apache configuration in [`hammer-with-ssl.conf`](/deployment/etc/sites-available/hammer-with-ssl.conf)
+Then use the apache configuration in [`hammer-with-ssl.conf`](/deployment/etc/apache2/sites-available/hammer-with-ssl.conf)
 instead of `hammer.conf`, and replace the SSL certificate/keyfile paths with your paths.
