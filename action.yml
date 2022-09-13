@@ -1,8 +1,8 @@
-name: "Deploy with Hammer"
-description: "Deploy a webapp with hammer"
+name: "Deploy with Hamr"
+description: "Deploy a webapp with hamr"
 inputs:
   server_url:
-    description: "URL of hammer API server"
+    description: "URL of hamr API server"
     required: true
 runs:
   using: 'node16'

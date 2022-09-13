@@ -1,4 +1,4 @@
-# Hammer
+# Hamr
 
 Next-gen open-source self-hosted serverless platform.
 
@@ -9,7 +9,7 @@ Next-gen open-source self-hosted serverless platform.
 1. Clone this repository on your server.
 
 ```
-$ git clone https://github.com/pipalacademy/hammer && cd hammer 
+$ git clone https://github.com/pipalacademy/hamr && cd hamr 
 ```
 
 2. Make sure you have Python3.9 or above installed. Then, create a `virtualenv` and install dependencies:
@@ -36,14 +36,14 @@ Then, `cp` them to the corresponding routes in your server. You can also use sym
 
 ```
 # symlink
-$ sudo ln -s "$(pwd)/deployment/etc/apache2/sites-available/hammer.conf" "/etc/apache2/sites-available/hammer.conf"
+$ sudo ln -s "$(pwd)/deployment/etc/apache2/sites-available/hamr.conf" "/etc/apache2/sites-available/hamr.conf"
 ```
 
 5. Enabling apache mods and the site:
 
 ```
 $ sudo a2enmod cgid rewrite
-$ sudo a2ensite hammer
+$ sudo a2ensite hamr
 ```
 
 6. (optional) Enabling SSL.
@@ -59,8 +59,8 @@ sudo certbot certonly --manual --preferred-challenges=dns -d '*.rajdhani.example
 certbot will then give you some text that it will ask you to add as a TXT entry on a particular hostname.
 Once you do that, a certificate and private key will be generated for you.
 
-Then use the apache configuration in [`hammer-with-ssl.conf`](/deployment/etc/apache2/sites-available/hammer-with-ssl.conf)
-instead of `hammer.conf`, and replace the SSL certificate/keyfile paths with your paths.
+Then use the apache configuration in [`hamr-with-ssl.conf`](/deployment/etc/apache2/sites-available/hamr-with-ssl.conf)
+instead of `hamr.conf`, and replace the SSL certificate/keyfile paths with your paths.
 
 ## Timeouts
 

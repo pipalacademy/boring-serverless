@@ -8,7 +8,7 @@ from pathlib import Path
 from wsgiref.handlers import CGIHandler
 
 
-this_path = Path(__file__).parent # path to hammer installation
+this_path = Path(__file__).parent # path to hamr installation
 APPS_DIR = this_path / "apps"
 
 API_HOSTNAME_PATTERNS = ["localhost", "hamr.*"]
