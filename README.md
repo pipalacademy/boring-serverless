@@ -1,6 +1,8 @@
 # Hamr
 
-Next-gen open-source self-hosted serverless platform.
+> *Nail your deployments with hamr*
+
+Hamr (pronounced "Hammer") is a next gen open source self hosted serverless platform.
 
 ## Deployment
 
@@ -9,7 +11,7 @@ Next-gen open-source self-hosted serverless platform.
 1. Clone this repository on your server.
 
 ```
-$ git clone https://github.com/pipalacademy/hamr && cd hamr 
+$ git clone https://github.com/pipalacademy/hamr && cd hamr
 ```
 
 2. Make sure you have Python3.9 or above installed. Then, create a `virtualenv` and install dependencies:
@@ -35,7 +37,7 @@ $ sudo apt-get install apache2
 Then, `cp` them to the corresponding routes in your server. You can also use symlinks instead.
 
 ```
-# symlink
+$ # symlink
 $ sudo ln -s "$(pwd)/deployment/etc/apache2/sites-available/hamr.conf" "/etc/apache2/sites-available/hamr.conf"
 ```
 
