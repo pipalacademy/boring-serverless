@@ -59,3 +59,10 @@ Once you do that, a certificate and private key will be generated for you.
 
 Then use the apache configuration in [`boring-with-ssl.conf`](/deployment/etc/apache2/sites-available/boring-with-ssl.conf)
 instead of `boring.conf`, and replace the SSL certificate/keyfile paths with your paths.
+
+## Timeouts
+
+By default, Apache has a timeout for CGI scripts set to 20 seconds.
+This configuration can be changed with the [`CGIDScriptTimeout` directive](https://httpd.apache.org/docs/trunk/mod/mod_cgid.html#cgidscripttimeout).
+
+Since both deployments and user apps are served as CGI scripts, this timeout will apply to both.
