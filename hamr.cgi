@@ -34,7 +34,7 @@ class Serverless:
         if any(fnmatch.fnmatch(hostname, pattern) for pattern in API_HOSTNAME_PATTERNS):
             sys.path.insert(0, str(this_path))
 
-            from api import app
+            from hamr.api import app
             return app
         else:
             sys.path.insert(0, str(get_root(hostname)))
