@@ -1,4 +1,16 @@
-# Boring serverless
+# Hamr
+
+> Dead simple tool to nail your deployments.
+
+Hamr (pronounced "Hammer") is a next-gen open-source self-hosted serverless platform.
+
+## Usage
+
+Hamr is to be setup on a machine - a raspberry PI, a cloud VM.
+Then, it gives an API to deploy apps to that machine.
+
+The apps don't live as a long-running process, and each app is invoked when a HTTP request
+is received for it. This is accomplished with CGI.
 
 ## Deployment
 
@@ -7,7 +19,7 @@
 1. Clone this repository on your server.
 
 ```
-$ git clone https://github.com/pipalacademy/boring-serverless && cd boring-serverless
+$ git clone https://github.com/pipalacademy/hamr && cd hamr
 ```
 
 2. Make sure you have Python3.9 or above installed. Then, create a `virtualenv` and install dependencies:
@@ -33,15 +45,15 @@ $ sudo apt-get install apache2
 Then, `cp` them to the corresponding routes in your server. You can also use symlinks instead.
 
 ```
-# symlink
-$ sudo ln -s "$(pwd)/deployment/etc/apache2/sites-available/boring.conf" "/etc/apache2/sites-available/boring.conf"
+$ # symlink
+$ sudo ln -s "$(pwd)/deployment/etc/apache2/sites-available/hamr.conf" "/etc/apache2/sites-available/hamr.conf"
 ```
 
 5. Enabling apache mods and the site:
 
 ```
 $ sudo a2enmod cgid rewrite
-$ sudo a2ensite boring
+$ sudo a2ensite hamr
 ```
 
 6. (optional) Enabling SSL.
@@ -57,8 +69,8 @@ sudo certbot certonly --manual --preferred-challenges=dns -d '*.rajdhani.example
 certbot will then give you some text that it will ask you to add as a TXT entry on a particular hostname.
 Once you do that, a certificate and private key will be generated for you.
 
-Then use the apache configuration in [`boring-with-ssl.conf`](/deployment/etc/apache2/sites-available/boring-with-ssl.conf)
-instead of `boring.conf`, and replace the SSL certificate/keyfile paths with your paths.
+Then use the apache configuration in [`hamr-with-ssl.conf`](/deployment/etc/apache2/sites-available/hamr-with-ssl.conf)
+instead of `hamr.conf`, and replace the SSL certificate/keyfile paths with your paths.
 
 ## Timeouts
 

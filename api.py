@@ -5,7 +5,7 @@ from pathlib import Path
 from flask import Flask, request
 
 
-app = Flask("boring_serverless")
+app = Flask(__name__)
 this_path = Path(__file__).parent
 
 
