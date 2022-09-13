@@ -41,7 +41,15 @@ $ venv/bin/python -m pip install -r requirements.txt
 $ sudo apt-get install apache2
 ```
 
-4. All set! Now change the sample files in deployment/ to use your domain and the directory where you cloned it.
+4. Give Apache user access to apps/ directory. Apache user (maybe `www-data` or `apache`) needs to be given
+access to the apps/ directory so that it can create directories there.
+
+```
+mkdir apps
+sudo chown www-data:www-data apps
+```
+
+5. All set! Now change the sample files in deployment/ to use your domain and the directory where you cloned it.
 Then, `cp` them to the corresponding routes in your server. You can also use symlinks instead.
 
 ```
@@ -49,14 +57,14 @@ $ # symlink
 $ sudo ln -s "$(pwd)/deployment/etc/apache2/sites-available/hamr.conf" "/etc/apache2/sites-available/hamr.conf"
 ```
 
-5. Enabling apache mods and the site:
+6. Enabling apache mods and the site:
 
 ```
 $ sudo a2enmod cgid rewrite
 $ sudo a2ensite hamr
 ```
 
-6. (optional) Enabling SSL.
+7. (optional) Enabling SSL.
 
 For a non-wildcard URL, you can use [certbot with apache plugin](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-20-04).
 
