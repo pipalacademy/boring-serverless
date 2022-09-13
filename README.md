@@ -1,8 +1,16 @@
 # Hamr
 
-> *Nail your deployments with hamr*
+> Dead simple tool to nail your deployments.
 
-Hamr (pronounced "Hammer") is a next gen open source self hosted serverless platform.
+Hamr (pronounced "Hammer") is a next-gen open-source self-hosted serverless platform.
+
+## Usage
+
+Hamr is to be setup on a machine - a raspberry PI, a cloud VM.
+Then, it gives an API to deploy apps to that machine.
+
+The apps don't live as a long-running process, and each app is invoked when a HTTP request
+is received for it. This is accomplished with CGI.
 
 ## Deployment
 
