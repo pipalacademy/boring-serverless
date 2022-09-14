@@ -3,13 +3,10 @@ const github = require("@actions/github")
 const axios = require("axios")
 
 const serverURL = core.getInput("server_url")
-const { owner, repo } = github.context.repo
+const appName = core.getInput("app_name")
 
 axios
-    .post(`${serverURL}/deploy`, {
-        repo_owner: owner,
-        repo_name: repo
-    })
+    .post(`${serverURL}/apps/${appName}/deploy`)
     .then(res => {
         console.log("done! response:")
         console.log(JSON.stringify(res.data))

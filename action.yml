@@ -4,6 +4,9 @@ inputs:
   server_url:
     description: "URL of hamr API server"
     required: true
+  app_name:
+    description: "App name as set in Hamr"
+    required: true
 runs:
   using: 'node16'
   main: 'action_build/index.js'
