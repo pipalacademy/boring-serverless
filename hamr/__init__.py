@@ -16,7 +16,8 @@ class UserApp:
             repo = git.Repo(self.git_dir)
             repo.remotes.origin.pull()
         else:
-            repo = git.Repo.clone_from(self.git_url, self.git_dir)
+            # repo = git.Repo.clone_from(self.git_url, self.git_dir)
+            raise Exception("App dir doesn't exist")
 
 
 def get_gh_app(repo_owner, repo_name):
@@ -27,6 +28,14 @@ def get_gh_app(repo_owner, repo_name):
 
 def get_repo_url(owner_name, repo_name):
     return f"https://github.com/{owner_name}/{repo_name}"
+
+
+def get_app_by_name(app_name):
+    app_dir = apps_dir / app_name
+    if app_dir.is_dir():
+        return UserApp(None, app_dir)
+
+    return None
 
 
 def get_repo_dir(owner_name, repo_name):
