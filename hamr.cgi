@@ -17,7 +17,7 @@ API_HOSTNAME_PATTERNS = ["localhost", "hamr.*"]
 def get_root(hostname):
     first, _ = hostname.split(".", maxsplit=1)
 
-    return str(APPS_DIR / first)
+    return APPS_DIR / first
 
 
 class Serverless:
@@ -37,13 +37,16 @@ class Serverless:
             from hamr.api import app
             return app
         else:
-            sys.path.insert(0, str(get_root(hostname)))
+            app_dir = get_root(hostname)
 
-            try:
-                from wsgi import app
-                return app
-            except ImportError:
+            if not app_dir.is_dir():
                 return self.not_found_app
+
+            os.chdir(app_dir)
+            sys.path.insert(0, str(app_dir))
+
+            from wsgi import app
+            return app
 
     def __call__(self, environ, start_response):
         hostname = os.getenv("SERVER_NAME")
