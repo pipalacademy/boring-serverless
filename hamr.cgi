@@ -10,6 +10,7 @@ from wsgiref.handlers import CGIHandler
 
 this_path = Path(__file__).parent # path to hamr installation
 APPS_DIR = this_path / "apps"
+CONFIG_FILE = this_path / "config.yml"
 
 API_HOSTNAME_PATTERNS = ["localhost", "hamr.*"]
 
@@ -18,6 +19,12 @@ def get_root(hostname):
     first, _ = hostname.split(".", maxsplit=1)
 
     return APPS_DIR / first
+
+
+def get_config():
+    if Path(CONFIG_FILE).is_file():
+        with open(CONFIG_FILE) as f:
+            return yaml.safe_load(f)
 
 
 class Serverless:
@@ -48,9 +55,15 @@ class Serverless:
             from wsgi import app
             return app
 
+    def inject_env_vars(self):
+        config = get_config()
+        env_vars = config and config.get("env") or {}
+        for key, val in env_vars.items():
+            os.environ[key.upper()] = val
+
     def __call__(self, environ, start_response):
         hostname = os.getenv("SERVER_NAME")
-
+        self.inject_env_vars()
         app = self.get_app(hostname)
         return app(environ, start_response)
 

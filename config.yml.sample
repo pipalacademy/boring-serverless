@@ -1,2 +1,5 @@
-whitelisted_repos:
-    - pipalacademy/rajdhani
+env:
+    smtp_hostname: localhost
+    smtp_port: 8025
+    smtp_username: user
+    smtp_password: topsecret
