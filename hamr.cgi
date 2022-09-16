@@ -59,7 +59,7 @@ class Serverless:
         config = get_config()
         env_vars = config and config.get("env") or {}
         for key, val in env_vars.items():
-            os.environ[key.upper()] = val
+            os.environ[key.upper()] = str(val)
 
     def __call__(self, environ, start_response):
         hostname = os.getenv("SERVER_NAME")
