@@ -27,6 +27,13 @@ def get_config():
             return yaml.safe_load(f)
 
 
+def inject_env_vars():
+    config = get_config()
+    env_vars = config and config.get("env") or {}
+    for (key, val) in env_vars.items():
+        os.environ[key.upper()] = str(val)
+
+
 class Serverless:
 
     def not_found_app(self, environ, start_response):
@@ -55,20 +62,14 @@ class Serverless:
             from wsgi import app
             return app
 
-    def inject_env_vars(self):
-        config = get_config()
-        env_vars = config and config.get("env") or {}
-        for key, val in env_vars.items():
-            os.environ[key.upper()] = str(val)
-
     def __call__(self, environ, start_response):
         hostname = os.getenv("SERVER_NAME")
-        self.inject_env_vars()
         app = self.get_app(hostname)
         return app(environ, start_response)
 
 
 def main():
+    inject_env_vars()
     app = Serverless()
     CGIHandler().run(app)
 
