@@ -27,11 +27,17 @@ def get_config():
             return yaml.safe_load(f)
 
 
-def inject_env_vars():
+def inject_env_vars(config_key="env"):
     config = get_config()
-    env_vars = config and config.get("env") or {}
+    env_vars = config and config.get(config_key) or {}
     for (key, val) in env_vars.items():
         os.environ[key.upper()] = str(val)
+
+
+def setup_env():
+    inject_env_vars()
+    if "HTTP_X_HAMR_TEST" in os.environ:
+        inject_env_vars("test_env")
 
 
 class Serverless:
@@ -69,7 +75,7 @@ class Serverless:
 
 
 def main():
-    inject_env_vars()
+    setup_env()
     app = Serverless()
     CGIHandler().run(app)
 
