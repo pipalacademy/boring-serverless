@@ -94,3 +94,12 @@ By default, Apache has a timeout for CGI scripts set to 20 seconds.
 This configuration can be changed with the [`CGIDScriptTimeout` directive](https://httpd.apache.org/docs/trunk/mod/mod_cgid.html#cgidscripttimeout).
 
 Since both deployments and user apps are served as CGI scripts, this timeout will apply to both.
+
+## Test environment
+
+To activate a test configuration, you can use environment variables.
+
+In `config.yml`, create another dictionary similar to `env` named `test_env` that
+would override the environment variables in testing environment.
+
+The testing environment will be activated when a `X-HAMR-TEST` request header is sent.
