@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">Apps</h1>
+{% if apps %}
+<table class="table">
+  <thead>
+    <th>#</th>
+    <th>Name</th>
+    <th>Git URL</th>
+    <th>Actions</th>
+  </thead>
+  <tbody>
+    {% for app in apps %}
+    <tr>
+      <th>{{ loop.index }}</th>
+      <td>{{ app.name }}</td>
+      <td>
+        {% if app.git_url %}
+        <a href="{{ app.git_url }}" target="_blank" class="is-truncated-left">
+          {{ app.git_url }}
+        </a>
+        {% else %}
+        <span class="has-text-grey">Not using Git</span>
+        {% endif %}
+      </td>
+      <td class="is-flex is-justify-content-space-around">
+        {% if app.git_url %}
+        <!-- TODO: sync the app when this is clicked -->
+        <span class="icon has-text-primary">
+          <i class="fas fa-sync"></i>
+        </span>
+        {% endif %}
+        <!-- TODO: delete the app when this is clicked -->
+        <span class="icon has-text-danger">
+          <i class="fas fa-trash"></i>
+        </span>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<em>No apps deployed yet. Create one to see it here.</em>
+{% endif %}
+{% endblock %}
