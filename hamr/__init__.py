@@ -17,26 +17,15 @@ class UserApp:
     def __init__(self, name, git_url=None, git_dir=None):
         self.name = name
         self.app_root = APPS_DIR / name
+        self.git_dir = git_dir or self.app_root / "app"
         self.git_url = git_url
-        self.git_dir = git_dir or self.app_root
+
+        if not self.git_url and is_valid_git_dir(self.git_dir):
+            self.git_url = get_origin_url(self.git_dir)
 
     @property
     def version(self):
         return get_version(self.git_dir) if is_valid_git_dir(self.git_dir) else None
-
-    def init_dirs(self):
-        """Creates necessary directories
-
-        Note: this doesn't create a `site` directory because it
-        is a special directory.
-        If it exists, then the web server must only serve files
-        from that directory and not run any dynamic scripts.
-        """
-        (self.app_root / "bin").mkdir(exists_ok=True)
-        (self.app_root / "logs").mkdir(exists_ok=True)
-        (self.app_root / "public").mkdir(exists_ok=True)
-        (self.app_root / "private").mkdir(exists_ok=True)
-        (self.app_root / "tmp").mkdir(exists_ok=True)
 
     def _git_pull(self):
         git.Repo(self.git_dir).remotes.origin.pull()
@@ -91,33 +80,13 @@ def get_apps():
 
     # get sub directories
     for appdir in APPS_DIR.glob("*/"):
-        apps.append(get_app_from_dir(appdir))
+        apps.append(get_app_by_name(appdir.name))
 
     return apps
 
 
 def get_app_by_name(app_name):
-    app_dir = APPS_DIR / app_name
-    if app_dir.is_dir():
-        return get_app_from_dir(app_dir)
-
-    return None
-
-
-def get_app_from_dir(app_dir):
-    git_dir = app_dir
-
-    if is_valid_git_dir(app_dir):
-        repo = git.Repo(git_dir)
-        if not repo.bare and "origin" in repo.remotes:
-            origin = repo.remote("origin")
-            git_url = next(origin.urls)
-        else:
-            git_url = None
-
-        return UserApp(name=app_dir.name, git_url=git_url, git_dir=git_dir)
-    else:
-        return UserApp(name=app_dir.name)
+    return UserApp(name=app_name)
 
 
 def create_app(app_name, git_url):
@@ -129,6 +98,12 @@ def create_app(app_name, git_url):
         git.Repo.clone_from(app.git_url, app.git_dir)
     except GitError as e:
         raise HamrError("git clone failed") from e
+
+    try:
+        init_app_dirs(app.app_root)
+    except OSError as e:
+        raise HamrError("couldn't initialize app dirs") from e
+
     return app
 
 
@@ -141,6 +116,26 @@ def is_valid_git_dir(path):
         return True
 
 
+def init_app_dirs(app_root):
+    """Creates necessary directories
+
+    Note: this doesn't create a `site` directory because it
+    is a special directory.
+    If it exists, then the web server must only serve files
+    from that directory and not run any dynamic scripts.
+    """
+    (app_root / "bin").mkdir(exist_ok=True)
+    (app_root / "logs").mkdir(exist_ok=True)
+    (app_root / "public").mkdir(exist_ok=True)
+    (app_root / "private").mkdir(exist_ok=True)
+    (app_root / "tmp").mkdir(exist_ok=True)
+
+
 def get_version(git_dir):
     repo = git.Repo(git_dir)
     return repo.head.commit.hexsha[:7] if repo.head.is_valid() else None
+
+
+def get_origin_url(git_dir):
+    repo = git.Repo(git_dir)
+    return "origin" in repo.remotes and next(repo.remotes.origin.urls) or None
