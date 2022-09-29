@@ -39,10 +39,12 @@
       <th>{{ loop.index }}</th>
       <td>{{ app.name }}</td>
       <td>
-        {% if app.git_url %}
+        {% if app.git_url and app.git_url.startswith("https://") %}
         <a href="{{ app.git_url }}" target="_blank" class="is-truncated-left">
           {{ app.git_url }}
         </a>
+        {% elif app.git_url %}
+          {{ app.git_url }}
         {% else %}
         <span class="has-text-grey">Not using Git</span>
         {% endif %}
@@ -51,7 +53,7 @@
         {% if app.version %}
         {{ app.version }} {% if app.is_update_available() %}<span class="has-text-grey"><em>(Update available)</em></span>{% endif %}
         {% else %}
-        <div class="has-text-centered has-text-gray">-</span>
+        <span class="has-text-gray">-</span>
         {% endif %}
       </td>
       <td>
