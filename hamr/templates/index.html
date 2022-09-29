@@ -3,9 +3,10 @@
 {% block content %}
 <div class="mb-3">
   {% set message_classes = dict(success="is-success", error="is-danger") %}
+  {% set default_message_classes = "is-info" %}
   {% set messages = get_flashed_messages(with_categories=True) %}
   {% for category, message in messages %}
-  <div class="notification {{ message_classes[category] }}">
+  <div class="notification {{ message_classes[category] or default_message_classes }}">
     <!-- hack: use anchor tag to refresh the page and make the notification go away -->
     <a class="delete" href="/"></a>
     <div class="block">{{ message | safe }}</div>
@@ -15,8 +16,10 @@
 
 <div class="is-flex is-justify-content-space-between">
   <h1 class="title">Apps</h1>
-  <div>
-    <button class="button is-info mr-1">Check for updates</button>
+  <div class="block">
+    <form type="submit" action="/apps/check_for_updates" method="POST" class="is-inline">
+      <button class="button is-info mr-1">Check for updates</button>
+    </form>
     <button class="button is-primary ml-1">Create new</button>
   </div>
 </div>

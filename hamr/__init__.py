@@ -41,8 +41,11 @@ class UserApp:
     def _git_pull(self):
         git.Repo(self.git_dir).remotes.origin.pull()
 
-    def _git_fetch(self):
-        git.Repo(self.git_dir).remotes.origin.fetch()
+    def _is_updatable(self):
+        if self.git_dir:
+            return "origin" in git.Repo(self.git_dir).remotes
+        else:
+            return False
 
     def sync(self):
         # since all apps as of now are git-based, we git-pull
@@ -57,11 +60,21 @@ class UserApp:
         except OSError as e:
             raise HamrError("deleting app directory failed") from e
 
-    def is_update_available(self):
+    def is_update_available(self, fetch=False):
+        """Checks for updates
+
+        If fetch is true, this will try to fetch changes from the remote
+        server, which may take a longer time.
+        """
+        if not self._is_updatable():
+            return False
+
         repo = git.Repo(self.git_dir)
         branch = repo.head.ref
         branch_name = branch.name
         origin = repo.remotes.origin
+        if fetch and branch_name in origin.refs:
+            origin.fetch()
         remote_branch = branch_name in origin.refs and origin.refs[branch_name]
         return remote_branch and remote_branch.commit != branch.commit
 
