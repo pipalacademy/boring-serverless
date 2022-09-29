@@ -34,13 +34,21 @@ def inject_env_vars(config_key="env"):
         os.environ[key.upper()] = str(val)
 
 
-def setup_env():
+def setup_env(app_root):
+    os.environ["APP_ROOT"] = str(app_root)
+    os.environ["TMPDIR"] = str(app_root / "tmp")
+
     inject_env_vars()
     if "HTTP_X_HAMR_TEST" in os.environ:
         inject_env_vars("test_env")
 
 
 class Serverless:
+
+    def __init__(self):
+        hostname = os.getenv("SERVER_NAME")
+        self.app_root = get_root(hostname).resolve()
+        self.app = self.get_app(hostname)
 
     def not_found_app(self, environ, start_response):
         status = "404 Not Found"
@@ -63,20 +71,18 @@ class Serverless:
                 return self.not_found_app
 
             os.chdir(app_dir)
-            sys.path.insert(0, str(app_dir))
+            sys.path.insert(0, str(app_dir / "app"))
 
             from wsgi import app
             return app
 
     def __call__(self, environ, start_response):
-        hostname = os.getenv("SERVER_NAME")
-        app = self.get_app(hostname)
-        return app(environ, start_response)
+        return self.app(environ, start_response)
 
 
 def main():
-    setup_env()
     app = Serverless()
+    setup_env(app.app_root)
     CGIHandler().run(app)
 
 
