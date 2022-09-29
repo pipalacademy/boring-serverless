@@ -1,9 +1,15 @@
-import git
 from pathlib import Path
+
+import git
+from git.exc import GitError
 
 
 base_path = Path(__file__).parent.parent
 APPS_DIR = base_path / "apps"
+
+
+class HamrError(Exception):
+    pass
 
 
 class UserApp:
@@ -28,14 +34,21 @@ class UserApp:
         (self.app_root / "private").mkdir(exists_ok=True)
         (self.app_root / "tmp").mkdir(exists_ok=True)
 
-    def git_clone(self):
+    def _git_clone(self):
         git.Repo.clone_from(self.git_url, self.git_dir)
 
-    def git_pull(self):
+    def _git_pull(self):
         git.Repo(self.git_dir).remotes.origin.pull()
 
-    def git_fetch(self):
+    def _git_fetch(self):
         git.Repo(self.git_dir).remotes.origin.fetch()
+
+    def sync(self):
+        # since all apps as of now are git-based, we git-pull
+        try:
+            self._git_pull()
+        except GitError as e:
+            raise HamrError("git pull failed") from e
 
     def is_update_available(self):
         repo = git.Repo(self.git_dir)

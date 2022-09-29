@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="mb-3">
+  {% set message_classes = dict(success="is-success", error="is-danger") %}
+  {% set messages = get_flashed_messages(with_categories=True) %}
+  {% for category, message in messages %}
+  <div class="notification {{ message_classes[category] }}">
+    <!-- hack: use anchor tag to refresh the page and make the notification go away -->
+    <a class="delete" href="/"></a>
+    <div class="block">{{ message | safe }}</div>
+  </div>
+  {% endfor %}
+</div>
+
 <div class="is-flex is-justify-content-space-between">
   <h1 class="title">Apps</h1>
   <div>
@@ -8,6 +20,7 @@
     <button class="button is-primary ml-1">Create new</button>
   </div>
 </div>
+
 {% if apps %}
 <table class="table">
   <thead>
@@ -39,20 +52,24 @@
         {% endif %}
       </td>
       <td>
-        {% if app.git_url %}
         <!-- TODO: sync the app when this is clicked -->
-        <span class="icon has-text-primary mx-2">
-          <i class="fas fa-sync"></i>
-        </span>
-        {% else %}
-        <span class="icon has-text-grey-light mx-2">
-          <i class="fas fa-sync"></i>
-        </span>
-        {% endif %}
+        <!-- how to?
+          -- 1. POST request as a form-button
+          -- 2. GET request as a link
+        -->
+        <form action="/apps/{{ app.name }}/sync" class="is-inline" method="POST">
+          {% set enabled = app.version and app.is_update_available() %}
+          {% set button_class = "has-text-primary" if enabled else "has-text-grey-light" %}
+          <button type="submit" class="button icon {{ button_class }}" {% if not enabled %}disabled{% endif %}>
+            <i class="fas fa-sync"></i>
+          </button>
+        </form>
         <!-- TODO: delete the app when this is clicked -->
-        <span class="icon has-text-danger mx-2">
-          <i class="fas fa-trash"></i>
-        </span>
+        <form action="/apps/{{ app.name }}/delete" class="is-inline" method="POST">
+          <button class="button icon has-text-danger">
+            <i class="fas fa-trash"></i>
+          </button>
+        </form>
       </td>
     </tr>
     {% endfor %}

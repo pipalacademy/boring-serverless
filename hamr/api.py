@@ -1,12 +1,12 @@
+import traceback
 import yaml
-from git.exc import GitError
+from flask import Flask, flash, redirect, render_template
 
-from flask import Flask, render_template
-
-from . import base_path, get_app_by_name, get_apps
+from . import HamrError, base_path, get_app_by_name, get_apps
 
 
 app = Flask(__name__)
+app.secret_key = "hello, world!"
 
 
 def get_config():
@@ -25,6 +25,25 @@ def health_check():
 def index():
     apps = get_apps()
     return render_template("index.html", apps=apps)
+
+
+@app.route("/apps/<app_name>/sync", methods=["POST"])
+def sync_app(app_name):
+    app = get_app_by_name(app_name)
+    try:
+        app.sync()
+    except HamrError as e:
+        tb = traceback.format_exc()
+        message = f"""\
+        <div class="block"><strong>An error occured while trying to sync: </strong>{e}</div>
+        <pre class="notification is-danger is-light"><code>{tb}</code></pre>
+        """
+        flash(message, "error")
+    else:
+        message = "App was successfully synced"
+        flash(message, "success")
+
+    return redirect("/")
 
 
 @app.route("/apps/<app_name>/deploy", methods=["POST"])
