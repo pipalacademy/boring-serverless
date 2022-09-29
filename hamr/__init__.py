@@ -12,6 +12,7 @@ class UserApp:
         self.app_root = APPS_DIR / name
         self.git_url = git_url
         self.git_dir = git_dir
+        self.version = get_version(self.git_dir) if self.git_dir else None
 
     def init_dirs(self):
         """Creates necessary directories
@@ -33,7 +34,19 @@ class UserApp:
     def git_pull(self):
         git.Repo(self.git_dir).remotes.origin.pull()
 
+    def git_fetch(self):
+        git.Repo(self.git_dir).remotes.origin.fetch()
+
+    def is_update_available(self):
+        repo = git.Repo(self.git_dir)
+        branch = repo.head.ref
+        branch_name = branch.name
+        origin = repo.remotes.origin
+        remote_branch = branch_name in origin.refs and origin.refs[branch_name]
+        return remote_branch and remote_branch.commit != branch.commit
+
     def deploy(self):
+        # TODO: check should be whether remote origin exists
         if (self.git_dir / ".git").exists():
             self.git_pull()
         else:
@@ -70,14 +83,20 @@ def get_app_by_name(app_name):
 
 
 def get_app_from_dir(app_dir):
-    repo = git.Repo(app_dir)
+    git_dir = app_dir
+    repo = git.Repo(git_dir)
     git_url = (None if repo.bare or not repo.remotes
                else next(repo.remote("origin").urls))
 
-    return UserApp(name=app_dir.name, git_url=git_url, git_dir=app_dir)
+    return UserApp(name=app_dir.name, git_url=git_url, git_dir=git_dir)
 
 
 def get_repo_dir(owner_name, repo_name):
     APPS_DIR.mkdir(exist_ok=True)
 
     return APPS_DIR / owner_name
+
+
+def get_version(git_dir):
+    repo = git.Repo(git_dir)
+    return repo.head.commit.hexsha[:7] if repo.head.is_valid() else None

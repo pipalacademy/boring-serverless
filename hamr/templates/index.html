@@ -1,13 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">Apps</h1>
+<div class="is-flex is-justify-content-space-between">
+  <h1 class="title">Apps</h1>
+  <div>
+    <button class="button is-info mr-1">Check for updates</button>
+    <button class="button is-primary ml-1">Create new</button>
+  </div>
+</div>
 {% if apps %}
 <table class="table">
   <thead>
     <th>#</th>
     <th>Name</th>
     <th>Git URL</th>
+    <th>Version</th>
     <th>Actions</th>
   </thead>
   <tbody>
@@ -24,15 +31,26 @@
         <span class="has-text-grey">Not using Git</span>
         {% endif %}
       </td>
-      <td class="is-flex is-justify-content-space-around">
+      <td>
+        {% if app.version %}
+        {{ app.version }} {% if app.is_update_available() %}<span class="has-text-grey"><em>(Update available)</em></span>{% endif %}
+        {% else %}
+        <div class="has-text-centered has-text-gray">-</span>
+        {% endif %}
+      </td>
+      <td>
         {% if app.git_url %}
         <!-- TODO: sync the app when this is clicked -->
-        <span class="icon has-text-primary">
+        <span class="icon has-text-primary mx-2">
+          <i class="fas fa-sync"></i>
+        </span>
+        {% else %}
+        <span class="icon has-text-grey-light mx-2">
           <i class="fas fa-sync"></i>
         </span>
         {% endif %}
         <!-- TODO: delete the app when this is clicked -->
-        <span class="icon has-text-danger">
+        <span class="icon has-text-danger mx-2">
           <i class="fas fa-trash"></i>
         </span>
       </td>
