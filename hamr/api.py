@@ -34,13 +34,26 @@ def sync_app(app_name):
         app.sync()
     except HamrError as e:
         tb = traceback.format_exc()
-        message = f"""\
-        <div class="block"><strong>An error occured while trying to sync: </strong>{e}</div>
-        <pre class="notification is-danger is-light"><code>{tb}</code></pre>
-        """
+        message = format_flash_error(e, tb)
         flash(message, "error")
     else:
-        message = "App was successfully synced"
+        message = f"App {app_name} was successfully synced"
+        flash(message, "success")
+
+    return redirect("/")
+
+
+@app.route("/apps/<app_name>/delete", methods=["POST"])
+def delete_app(app_name):
+    app = get_app_by_name(app_name)
+    try:
+        app.delete()
+    except HamrError as e:
+        tb = traceback.format_exc()
+        message = format_flash_error(e, tb)
+        flash(message, "error")
+    else:
+        message = f"App {app_name} was deleted"
         flash(message, "success")
 
     return redirect("/")
@@ -58,3 +71,12 @@ def deploy(app_name):
 
     app.deploy()
     return {"status": "ok"}
+
+
+def format_flash_error(e, tb=None):
+    tb_class = "notification is-danger is-light"
+
+    message = f"<strong>An error occured: </strong>{e}</div>"
+    if tb:
+        message += f'<pre class="{tb_class}"><code>{tb}</code></pre>'
+    return message

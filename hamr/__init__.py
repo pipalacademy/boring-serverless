@@ -1,7 +1,8 @@
+import shutil
 from pathlib import Path
 
 import git
-from git.exc import GitError
+from git.exc import GitError, InvalidGitRepositoryError
 
 
 base_path = Path(__file__).parent.parent
@@ -13,7 +14,7 @@ class HamrError(Exception):
 
 
 class UserApp:
-    def __init__(self, name, git_url, git_dir):
+    def __init__(self, name, git_url=None, git_dir=None):
         self.name = name
         self.app_root = APPS_DIR / name
         self.git_url = git_url
@@ -49,6 +50,12 @@ class UserApp:
             self._git_pull()
         except GitError as e:
             raise HamrError("git pull failed") from e
+
+    def delete(self):
+        try:
+            shutil.rmtree(self.app_root)
+        except OSError as e:
+            raise HamrError("deleting app directory failed") from e
 
     def is_update_available(self):
         repo = git.Repo(self.git_dir)
@@ -96,12 +103,28 @@ def get_app_by_name(app_name):
 
 
 def get_app_from_dir(app_dir):
-    git_dir = app_dir
-    repo = git.Repo(git_dir)
-    git_url = (None if repo.bare or not repo.remotes
-               else next(repo.remote("origin").urls))
+    if is_valid_git_dir(app_dir):
+        git_dir = app_dir
 
-    return UserApp(name=app_dir.name, git_url=git_url, git_dir=git_dir)
+        repo = git.Repo(git_dir)
+        if not repo.bare and "origin" in repo.remotes:
+            origin = repo.remote("origin")
+            git_url = next(origin.urls)
+        else:
+            git_url = None
+
+        return UserApp(name=app_dir.name, git_url=git_url, git_dir=git_dir)
+    else:
+        return UserApp(name=app_dir.name)
+
+
+def is_valid_git_dir(path):
+    try:
+        _ = git.Repo(path)
+    except InvalidGitRepositoryError:
+        return False
+    else:
+        return True
 
 
 def get_repo_dir(owner_name, repo_name):
