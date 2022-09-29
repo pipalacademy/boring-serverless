@@ -1,8 +1,8 @@
 import traceback
 import yaml
-from flask import Flask, flash, redirect, render_template
+from flask import Flask, flash, redirect, request, render_template, url_for
 
-from . import HamrError, base_path, get_app_by_name, get_apps
+from . import HamrError, base_path, create_app, get_app_by_name, get_apps
 
 
 app = Flask(__name__)
@@ -57,6 +57,34 @@ def delete_app(app_name):
         flash(message, "success")
 
     return redirect("/")
+
+
+@app.route("/apps/create", methods=["GET", "POST"])
+def create_new_app():
+    if request.method == "POST":
+        app_name = request.form.get("app_name")
+        git_url = request.form.get("git_url")
+
+        if not app_name:
+            return "app_name is required", 400
+
+        if not git_url:
+            return "git_url is required", 400
+
+        try:
+            create_app(app_name=app_name, git_url=git_url)
+        except HamrError as e:
+            tb = traceback.format_exc()
+            message = format_flash_error(e, tb)
+            flash(message, "error")
+            return redirect(
+                url_for("create_new_app", app_name=app_name, git_url=git_url))
+        else:
+            message = f"App {app_name} was created"
+            flash(message, "success")
+            return redirect("/")
+    else:
+        return render_template("create_app.html", args=request.args)
 
 
 @app.route("/apps/check_for_updates", methods=["POST"])

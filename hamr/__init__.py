@@ -18,8 +18,11 @@ class UserApp:
         self.name = name
         self.app_root = APPS_DIR / name
         self.git_url = git_url
-        self.git_dir = git_dir
-        self.version = get_version(self.git_dir) if self.git_dir else None
+        self.git_dir = git_dir or self.app_root
+
+    @property
+    def version(self):
+        return get_version(self.git_dir) if is_valid_git_dir(self.git_dir) else None
 
     def init_dirs(self):
         """Creates necessary directories
@@ -35,14 +38,11 @@ class UserApp:
         (self.app_root / "private").mkdir(exists_ok=True)
         (self.app_root / "tmp").mkdir(exists_ok=True)
 
-    def _git_clone(self):
-        git.Repo.clone_from(self.git_url, self.git_dir)
-
     def _git_pull(self):
         git.Repo(self.git_dir).remotes.origin.pull()
 
     def _is_updatable(self):
-        if self.git_dir:
+        if is_valid_git_dir(self.git_dir):
             return "origin" in git.Repo(self.git_dir).remotes
         else:
             return False
@@ -79,12 +79,11 @@ class UserApp:
         return remote_branch and remote_branch.commit != branch.commit
 
     def deploy(self):
-        # TODO: check should be whether remote origin exists
-        if (self.git_dir / ".git").exists():
-            self.git_pull()
+        if self._is_updatable():
+            self.sync()
         else:
             # self.git_clone()
-            raise Exception("App dir doesn't exist")
+            raise HamrError("App dir doesn't exist")
 
 
 def get_apps():
@@ -97,16 +96,6 @@ def get_apps():
     return apps
 
 
-def get_gh_app(repo_owner, repo_name):
-    git_url = get_repo_url(repo_owner, repo_name)
-    git_dir = get_repo_dir(repo_owner, repo_name)
-    return UserApp(git_url=git_url, git_dir=git_dir)
-
-
-def get_repo_url(owner_name, repo_name):
-    return f"https://github.com/{owner_name}/{repo_name}"
-
-
 def get_app_by_name(app_name):
     app_dir = APPS_DIR / app_name
     if app_dir.is_dir():
@@ -116,9 +105,9 @@ def get_app_by_name(app_name):
 
 
 def get_app_from_dir(app_dir):
-    if is_valid_git_dir(app_dir):
-        git_dir = app_dir
+    git_dir = app_dir
 
+    if is_valid_git_dir(app_dir):
         repo = git.Repo(git_dir)
         if not repo.bare and "origin" in repo.remotes:
             origin = repo.remote("origin")
@@ -131,6 +120,18 @@ def get_app_from_dir(app_dir):
         return UserApp(name=app_dir.name)
 
 
+def create_app(app_name, git_url):
+    """Creates a new app, pulling it from git url and setting up
+    necessary directories.
+    """
+    app = UserApp(name=app_name, git_url=git_url)
+    try:
+        git.Repo.clone_from(app.git_url, app.git_dir)
+    except GitError as e:
+        raise HamrError("git clone failed") from e
+    return app
+
+
 def is_valid_git_dir(path):
     try:
         _ = git.Repo(path)
@@ -138,12 +139,6 @@ def is_valid_git_dir(path):
         return False
     else:
         return True
-
-
-def get_repo_dir(owner_name, repo_name):
-    APPS_DIR.mkdir(exist_ok=True)
-
-    return APPS_DIR / owner_name
 
 
 def get_version(git_dir):

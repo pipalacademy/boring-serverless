@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">New app</h1>
+
+<form class="block" method="POST">
+  <div class="field">
+    <label class="label">App name</label>
+    <div class="control">
+      <input class="input" type="text" placeholder="rajdhani" name="app_name" value="{{ args.app_name if args.app_name }}" required>
+    </div>
+  </div>
+  <div class="field">
+    <label class="label">Git URL</label>
+    <div class="control">
+      <input class="input" type="url" placeholder="https://github.com/pipalacademy/rajdhani" name="git_url" value="{{ args.git_url if args.git_url }}" required>
+    </div>
+  </div>
+  <button class="button is-primary">Create</button>
+</form>
+{% endblock %}

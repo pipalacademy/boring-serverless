@@ -10,6 +10,22 @@
   <body>
   <section class="section">
     <div class="container">
+
+      {% block alerts %}
+      <div class="mb-3">
+        {% set message_classes = dict(success="is-success", error="is-danger") %}
+        {% set default_message_classes = "is-info" %}
+        {% set messages = get_flashed_messages(with_categories=True) %}
+        {% for category, message in messages %}
+        <div class="notification {{ message_classes[category] or default_message_classes }}">
+          <!-- hack: use anchor tag to refresh the page and make the notification go away -->
+          <a class="delete" href="/"></a>
+          <div class="block">{{ message | safe }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endblock %}
+
       {% block content %}
       {% endblock %}
     </div>
