@@ -76,7 +76,7 @@ class UserApp:
 
         # TODO: should capture stdout/stderr somewhere
         proc = subprocess.run(
-            ["sh", path], env=self.get_env_for_build_script(),
+            ["bash", path], env=self.get_env_for_build_script(),
             cwd=self.app_root/"app", timeout=60)
         if proc.returncode != 0:
             raise HamrError(f"Build script exited with non-zero error code: {proc.returncode}")
