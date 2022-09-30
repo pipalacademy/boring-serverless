@@ -104,7 +104,7 @@ def deploy(app_name):
 def format_flash_error(e, tb=None):
     tb_class = "notification is-danger is-light"
 
-    message = f"<strong>An error occured: </strong>{e}</div>"
+    message = f"<strong>An error occured: </strong>{e}"
     if tb:
         message += f'<pre class="{tb_class}"><code>{tb}</code></pre>'
     return message

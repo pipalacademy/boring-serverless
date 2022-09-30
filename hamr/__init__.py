@@ -1,12 +1,16 @@
+import os
 import shutil
+import subprocess
 from pathlib import Path
 
 import git
 from git.exc import GitError, InvalidGitRepositoryError
 
 
-base_path = Path(__file__).parent.parent
+base_path = Path(__file__).parent.parent.resolve()
 APPS_DIR = base_path / "apps"
+
+APP_BUILD_SCRIPT = "{app_root}/app/build.sh"
 
 
 class HamrError(Exception):
@@ -43,6 +47,8 @@ class UserApp:
         except GitError as e:
             raise HamrError("git pull failed") from e
 
+        self.run_build_script()
+
     def delete(self):
         try:
             shutil.rmtree(self.app_root)
@@ -55,6 +61,25 @@ class UserApp:
         else:
             # self.git_clone()
             raise HamrError("App dir doesn't exist")
+
+    def get_env_for_build_script(self):
+        return {
+            "APP_ROOT": str(self.app_root),
+            "TMPDIR": str(self.app_root / "tmp"),
+            "PATH": f"{self.app_root / 'bin'}:{os.getenv('PATH', '')}",
+        }
+
+    def run_build_script(self):
+        path = APP_BUILD_SCRIPT.format(app_root=self.app_root)
+        if not Path(path).is_file():
+            return
+
+        # TODO: should capture stdout/stderr somewhere
+        proc = subprocess.run(
+            ["sh", path], env=self.get_env_for_build_script(),
+            cwd=self.app_root/"app", timeout=60)
+        if proc.returncode != 0:
+            raise HamrError(f"Build script exited with non-zero error code: {proc.returncode}")
 
 
 def get_apps():
