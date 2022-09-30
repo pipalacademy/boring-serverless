@@ -4,9 +4,6 @@
 <div class="is-flex is-justify-content-space-between">
   <h1 class="title">Apps</h1>
   <div class="block">
-    <form type="submit" action="/apps/check_for_updates" method="POST" class="is-inline">
-      <button class="button is-info mr-1">Check for updates</button>
-    </form>
     <a href="/apps/create"><button class="button is-primary ml-1">Create new</button></a>
   </div>
 </div>
@@ -38,27 +35,19 @@
       </td>
       <td>
         {% if app.version %}
-        {{ app.version }} {% if app.is_update_available() %}<span class="has-text-grey"><em>(Update available)</em></span>{% endif %}
+        {{ app.version }}
         {% else %}
         <span class="has-text-gray">-</span>
         {% endif %}
       </td>
       <td>
-        <!-- TODO: sync the app when this is clicked -->
-        <!-- how to?
-          -- 1. POST request as a form-button
-          -- 2. GET request as a link
-        -->
         <form action="/apps/{{ app.name }}/sync" class="is-inline" method="POST">
-          {% set enabled = app.version and app.is_update_available() %}
-          {% set button_class = "has-text-primary" if enabled else "has-text-grey-light" %}
-          <button type="submit" class="button icon {{ button_class }}" {% if not enabled %}disabled{% endif %}>
+          <button type="submit" class="button icon has-text-primary">
             <i class="fas fa-sync"></i>
           </button>
         </form>
-        <!-- TODO: delete the app when this is clicked -->
         <form action="/apps/{{ app.name }}/delete" class="is-inline" method="POST">
-          <button class="button icon has-text-danger" onclick="return confirm('Are you sure you want to delete {{ app.name }}?')">
+          <button class="button icon has-text-danger ml-1" onclick="return confirm('Are you sure you want to delete {{ app.name }}?')">
             <i class="fas fa-trash"></i>
           </button>
         </form>

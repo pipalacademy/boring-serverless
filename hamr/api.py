@@ -87,17 +87,6 @@ def create_new_app():
         return render_template("create_app.html", args=request.args)
 
 
-@app.route("/apps/check_for_updates", methods=["POST"])
-def check_for_updates():
-    updates_available = 0
-    for app in get_apps():
-        if app.is_update_available(fetch=True):
-            updates_available += 1
-
-    flash(f"{updates_available} new updates available", "info")
-    return redirect("/")
-
-
 @app.route("/apps/<app_name>/deploy", methods=["POST"])
 def deploy(app_name):
     # should the route for this endpoint be changed to begin with /api/ ?
