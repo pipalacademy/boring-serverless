@@ -8,7 +8,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   </head>
   <body>
-  <section class="section">
+    {% block navbar %} 
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+          <h1 class="is-size-3 has-text-primary has-text-weight-bold">Hamr</h1>
+        </a>
+      </div>
+    </nav>
+    {% endblock %}
+
     <div class="container">
 
       {% block alerts %}
@@ -29,6 +38,5 @@
       {% block content %}
       {% endblock %}
     </div>
-  </section>
   </body>
 </html>
