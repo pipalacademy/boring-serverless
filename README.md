@@ -58,7 +58,7 @@ Then, `cp` them to the corresponding routes in your server. You can also use sym
 6. Enabling apache mods and the site:
 
     ```
-    $ sudo a2enmod cgid rewrite
+    $ sudo a2enmod cgid rewrite vhost_alias
     $ sudo a2ensite hamr
     ```
 
