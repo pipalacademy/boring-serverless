@@ -77,7 +77,11 @@ class Serverless:
             return app
 
     def __call__(self, environ, start_response):
-        return self.app(environ, start_response)
+        sys.stdout = sys.__stderr__
+        try:
+            return self.app(environ, start_response)
+        finally:
+            sys.stdout = sys.__stdout__
 
 
 def main():
