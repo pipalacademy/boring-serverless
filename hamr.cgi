@@ -73,7 +73,16 @@ class Serverless:
             os.chdir(app_dir)
             sys.path.insert(0, str(app_dir / "app"))
 
-            from wsgi import app
+            try:
+                from wsgi import app
+            finally:
+                # restoring stdout, stderr streams because importing
+                # may have had side effects, and stdout/stderr are
+                # crucial for CGI and logging to behave correctly.
+                # see https://github.com/pipalacademy/hamr/issues/20
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+
             return app
 
     def __call__(self, environ, start_response):
