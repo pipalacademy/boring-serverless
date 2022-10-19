@@ -48,6 +48,7 @@ class Serverless:
     def __init__(self):
         hostname = os.getenv("SERVER_NAME")
         self.app_root = get_root(hostname).resolve()
+        setup_env(self.app_root)
         self.app = self.get_app(hostname)
 
     def not_found_app(self, environ, start_response):
@@ -65,13 +66,14 @@ class Serverless:
             from hamr.api import app
             return app
         else:
-            app_dir = get_root(hostname)
+            app_root = get_root(hostname)
 
-            if not app_dir.is_dir():
+            if not app_root.is_dir():
                 return self.not_found_app
 
+            app_dir = app_root / "app"
             os.chdir(app_dir)
-            sys.path.insert(0, str(app_dir / "app"))
+            sys.path.insert(0, str(app_dir))
 
             try:
                 from wsgi import app
@@ -95,7 +97,6 @@ class Serverless:
 
 def main():
     app = Serverless()
-    setup_env(app.app_root)
     CGIHandler().run(app)
 
 
