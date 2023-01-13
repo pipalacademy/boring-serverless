@@ -1,6 +1,5 @@
 __pycache__/
 .mypy_cache/
-apps/
 venv/
 
 config.yml

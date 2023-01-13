@@ -1,0 +1,11 @@
+version: "2"
+services:
+  hamr:
+    image: hamr
+    volumes:
+      - ./apps:/hamr/apps
+      - ./deployment/etc/apache2/sites-available/hamr.conf:/etc/apache2/sites-available/hamr.conf
+      - ./requirements.txt:/hamr/requirements.txt
+      - ./logs:/var/log/apache2
+    ports:
+      - 8001:80

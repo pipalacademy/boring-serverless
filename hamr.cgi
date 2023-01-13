@@ -1,4 +1,4 @@
-#!./venv/bin/python
+#!/usr/local/bin/python
 
 import fnmatch
 import os
