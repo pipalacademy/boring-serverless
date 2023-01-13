@@ -10,6 +10,7 @@ RUN apt-get update && \
     service apache2 restart
 
 RUN mkdir -p apps && \
+    chmod a+rwx apps && \
     chown www-data:www-data apps && \
     ln -s "$(pwd)/deployment/etc/apache2/sites-available/hamr.conf" "/etc/apache2/sites-available/hamr.conf" && \
     a2ensite hamr
