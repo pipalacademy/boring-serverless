@@ -93,7 +93,7 @@ def get_apps():
 
 
 def get_app_by_name(app_name):
-    return UserApp(name=app_name)
+    return UserApp(name=app_name.lower())
 
 
 def create_app(app_name, git_url):

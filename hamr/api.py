@@ -62,14 +62,13 @@ def delete_app(app_name):
 @app.route("/apps/create", methods=["GET", "POST"])
 def create_new_app():
     if request.method == "POST":
-        app_name = request.form.get("app_name")
-        git_url = request.form.get("git_url")
-
-        if not app_name:
+        if "app_name" not in request.form:
             return "app_name is required", 400
-
-        if not git_url:
+        if "git_url" not in request.form:
             return "git_url is required", 400
+
+        app_name = request.form["app_name"].lower()
+        git_url = request.form["git_url"]
 
         try:
             create_app(app_name=app_name, git_url=git_url)
